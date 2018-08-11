@@ -4,7 +4,7 @@
 
  REST-FUL API*/
 
-const config = require('./config');
+const config = require('./lib/config');
 
 
 const http = require('http');
@@ -12,15 +12,8 @@ const https = require('https');
 const url = require('url');
 const { StringDecoder } = require('string_decoder');
 const fs = require('fs');
-const _data = require('./lib/data');
-
-
-
-// @TODO delete this test
-
-_data.delete('test','areYouPieceOfCrap?', (err) => {
-    console.log('this was the error', err)
-})
+const handlers = require('./lib/handlers');
+const helpers = require('./lib/helpers');
 
 
 
@@ -81,7 +74,7 @@ let unifedServer = (request, response) => {
             'queryStringObject' : queryStringObject,
             'method' : method,
             'handlers': handlers,
-            'payload' : buffer
+            'payload' : helpers.parseJsonToObject(buffer)
         }
         
         choosenHandler(data, (statusCode, payload) => {
@@ -112,36 +105,8 @@ let unifedServer = (request, response) => {
 }
 
 
-
-
-
-let handlers = {};
-
-
-
-
-handlers.ping = (data, callback) => {
-
-    callback(200)
-
+router = {
+    'notFound': handlers.notFound,
+    'ping' : handlers.ping,
+    'users': handlers.users
 }
-
-handlers.notFound = (data, callback) => {
-
-    callback(404)
-
-}
-
-
-let router = {
-    'ping':handlers.ping
-}
-
-
-
-
-
-
-
-
-
